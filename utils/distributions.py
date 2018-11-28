@@ -9,6 +9,7 @@ class Gaussian(object):
         self.mu = mu
         self.sigma = sigma
 
+        self.dim = len(mu)
         self.i_sigma = np.linalg.inv(np.copy(sigma))
 
     def get_energy_fn(self):
