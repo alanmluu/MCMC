@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-class Proposal(ABC):
+class Kernel(ABC):
 
     @abstractmethod
     def __init__(self):
@@ -12,7 +12,7 @@ class Proposal(ABC):
     def propose(self):
         pass
 
-class GaussianProposal(Proposal):
+class GaussianKernel(Kernel):
 
     def __init__(self, mu, sigma):
         self.mu = mu

@@ -18,3 +18,6 @@ class Gaussian(object):
             return support_functions.gaussian_energy(x, self.mu, self.i_sigma)
 
         return energy_fn
+
+    def get_density(self, x):
+        pass
