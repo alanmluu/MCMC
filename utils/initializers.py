@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import numpy as np
 
 
 class Initializer(ABC):
@@ -15,7 +16,7 @@ class Initializer(ABC):
 class ConstantInitializer(Initializer):
 
     def __init__(self, x):
-        self.x = x
+        self.x = np.array(x)
 
     def initialize(self, walker):
-        walker.set_position(self.x)
+        walker.x = self.x

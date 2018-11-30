@@ -18,10 +18,14 @@ class GaussianKernel(Kernel):
         self.sigma = sigma
 
     def propose(self, x, distribution):
-        return np.random.multivariate(mean=cx,
-                                      cov=self.sigma,
-                                      size=1)[0]
+        return np.random.multivariate_normal(mean=x,
+                                             cov=self.sigma,
+                                             size=1)[0]
 
+    def get_trans_factor(self, curr_x, prop_x):
+        return 1
+
+"""
 class Hamiltonian(Kernel):
 
     def __init__(self, steps, eps):
@@ -29,4 +33,5 @@ class Hamiltonian(Kernel):
         self.eps = eps
 
     def propose(self, x, distribution):
-        
+
+"""

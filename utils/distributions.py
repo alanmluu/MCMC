@@ -1,8 +1,9 @@
 import tensorflow as tf
 import numpy as np
-import support_functions
+from utils import support_functions
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
+import scipy.stats
 
 
 class Distribution(ABC):
@@ -35,11 +36,15 @@ class Gaussian(object):
     def get_samples(self, n):
         return np.random.multivariate_normal(self.mu, self.sigma, n)
 
-    def visualize(self, n, show=False, save_path=None):
+    def viz(self, n, show, save_path):
         assert self.dim == 2, 'Dimension must be 2.'
         samples = self.get_samples(n)
-        plt.scatter(samples[:, 0], samples[:, 1])
+        plt.figure(figsize=(8,8))
+        plt.scatter(samples[:, 0], samples[:, 1], s=5)
         if show:
             plt.show()
-        elif save_path is not None:
+        if save_path:
             plt.savefig(save_path, format='png')
+
+    def get_density(self, x):
+        return scipy.stats.multivariate_normal.pdf(x, self.mu, self.sigma)
