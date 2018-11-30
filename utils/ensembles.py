@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from random import random
+from abc import ABC
 
 
 class Ensemble(ABC):
@@ -10,5 +9,5 @@ class Ensemble(ABC):
 
 class CanonicalEnsemble(Ensemble):
 
-    def get_ens_factor(curr_x_dens, prop_x_dens):
+    def get_ensemble_factor(curr_x_dens, prop_x_dens):
         return prop_x_dens/curr_x_dens

@@ -1,6 +1,19 @@
 import tensorflow as tf
 import numpy as np
 import support_functions
+from abc import ABC, abstractmethod
+import matplotlib.pyplot as plt
+
+
+class Distribution(ABC):
+
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def get_density(self, x):
+        pass
 
 
 class Gaussian(object):
@@ -19,5 +32,14 @@ class Gaussian(object):
 
         return energy_fn
 
-    def get_density(self, x):
-        pass
+    def get_samples(self, n):
+        return np.random.multivariate_normal(self.mu, self.sigma, n)
+
+    def visualize(self, n, show=False, save_path=None):
+        assert self.dim == 2, 'Dimension must be 2.'
+        samples = self.get_samples(n)
+        plt.scatter(samples[:, 0], samples[:, 1])
+        if show:
+            plt.show()
+        elif save_path is not None:
+            plt.savefig(save_path, format='png')

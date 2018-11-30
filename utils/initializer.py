@@ -11,6 +11,7 @@ class Initializer(ABC):
     def initialize(self, walker):
         pass
 
+
 class ConstantInitializer(Initializer):
 
     def __init__(self, x):
