@@ -1,6 +1,7 @@
 from utils.distributions import Distribution
 import matplotlib.pyplot as plt
 from utils.support_functions import COLOR_CYCLE
+import tensorflow as tf
 
 
 class System(object):
@@ -47,7 +48,8 @@ class System(object):
         ensemble_factor = self.ensemble.get_ensemble_factor(curr_x_dens,
                                                             prop_x_dens)
 
-        accept_ratio = min(1, ensemble_factor * trans_factor)
+        accept_ratio = tf.minimum(1, tf.multiply(trans_factor,
+                                                 ensemble_factor)).numpy()[0]
 
         self.walker.walk(accept_ratio, prop_x)
         self.profiler.log(self.walker.x)
@@ -62,9 +64,9 @@ class System(object):
     def viz_trajectory(self, run_name=None, n=1000, show=True, save_path=None):
         self.viz_dist(n, show=False, save_path=None)
         if run_name:
-            X = self.profiler.history[run_name]
+            X = self.profiler.history[run_name].numpy()
         else:
-            X = self.profiler.cur_run
+            X = self.profiler.cur_run.numpy()
         plt.plot(X[:,0], X[:,1], color=COLOR_CYCLE[1], marker="o")
         if show:
             plt.show()

@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 
 class Profiler(object):
@@ -19,5 +20,5 @@ class Profiler(object):
         self.history[self.cur_run_name] = self.cur_run
 
     def log(self, x):
-        self.cur_run = np.vstack((self.cur_run, x))
+        self.cur_run = tf.concat([self.cur_run, x], axis=0)
         self.history[self.cur_run_name] = self.cur_run

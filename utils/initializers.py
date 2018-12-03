@@ -16,7 +16,7 @@ class Initializer(ABC):
 class ConstantInitializer(Initializer):
 
     def __init__(self, x):
-        self.x = np.array(x)
+        self.x = x
 
     def initialize(self, walker):
         walker.x = self.x

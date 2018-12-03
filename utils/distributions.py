@@ -23,8 +23,11 @@ class Gaussian(object):
         self.mu = mu
         self.sigma = sigma
 
-        self.dim = len(mu)
-        self.i_sigma = np.linalg.inv(np.copy(sigma))
+        self.mu_n = self.mu.numpy()[0]
+        self.sigma_n = self.sigma.numpy()
+
+        self.dim = mu.get_shape()[1].value
+        self.i_sigma = tf.constant(np.linalg.inv(np.copy(sigma)))
 
     def get_energy_fn(self):
 
@@ -33,8 +36,12 @@ class Gaussian(object):
 
         return energy_fn
 
+    def get_density(self, x):
+        exponent = -support_functions.gaussian_energy(x, self.mu, self.i_sigma)
+        return tf.math.exp(exponent)
+
     def get_samples(self, n):
-        return np.random.multivariate_normal(self.mu, self.sigma, n)
+        return np.random.multivariate_normal(self.mu_n, self.sigma_n, n)
 
     def viz(self, n, show, save_path):
         assert self.dim == 2, 'Dimension must be 2.'
@@ -45,6 +52,3 @@ class Gaussian(object):
             plt.show()
         if save_path:
             plt.savefig(save_path, format='png')
-
-    def get_density(self, x):
-        return scipy.stats.multivariate_normal.pdf(x, self.mu, self.sigma)
