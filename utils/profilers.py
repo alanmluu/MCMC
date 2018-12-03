@@ -22,3 +22,17 @@ class Profiler(object):
     def log(self, x):
         self.cur_run = tf.concat([self.cur_run, x], axis=0)
         self.history[self.cur_run_name] = self.cur_run
+
+    def get_runs(self):
+        return self.history.keys()
+
+    def remove_run(self, run):
+        self.history.pop(run)
+
+    def reset(self):
+        self.__init__()
+
+    def clean(self):
+        for key in list(self.history.keys()):
+            if key != self.cur_run_name:
+                self.history.pop(key)

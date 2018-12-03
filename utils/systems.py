@@ -34,7 +34,6 @@ class System(object):
         self.initializer.initialize(self.walker)
         self.profiler.start_run(self.walker.x, name)
 
-
     def step(self):
         assert self.walker.x is not None, "Walker position must be initialized."
 
@@ -72,3 +71,13 @@ class System(object):
             plt.show()
         if save_path:
             plt.savefig(save_path, format='png')
+
+    def reset_profiler(self):
+        self.profiler.reset()
+
+    def reset_all(self, name=None):
+        self.reset_profiler()
+        self.initialize_walker(name)
+
+    def clean_profiler(self):
+        self.profiler.clean()
