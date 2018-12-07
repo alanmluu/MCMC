@@ -63,8 +63,35 @@ class GMM(Distribution):
         self.mus = mus
         self.sigmas = sigmas
         self.pis = pis
+
         self.nb_mixtures = len(mus)
         self.dim = len(self.mus[0])
+
+        self.i_sigmas = []
+        self.constants = []
+
+        for i, sigma in enumerate(sigmas):
+            self.i_sigmas.append(np.linalg.inv(sigma).astype('float32'))
+            det = np.sqrt((2 * np.pi) ** self.dim * np.linalg.det(sigma)).astype('float32')
+            self.constants.append((pis[i] / det).astype('float32'))
+
+    def get_energy_fn(self):
+        def fn(x):
+          V = tf.concat([
+              tf.expand_dims(-support_functions.gaussian_energy(x,
+                                                                self.mus[i],
+                                                                self.i_sigmas[i])
+                             + tf.log(self.constants[i]), 1)
+              for i in range(self.nb_mixtures)
+          ], axis=1)
+
+          return -tf.reduce_logsumexp(V, axis=1)
+        return fn
+
+    def get_density(self, x):
+        energy_fn = self.get_energy_fn()
+        energy = energy_fn(x)
+        return tf.math.exp(-energy)
 
     def get_samples(self, n):
         categorical = np.random.choice(self.nb_mixtures, size=(n,), p=self.pis)

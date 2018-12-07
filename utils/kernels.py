@@ -32,17 +32,22 @@ class GaussianKernel(Kernel):
 
 class Hamiltonian(Kernel):
 
-    def __init__(self, steps, eps, sigma):
+    def __init__(self, steps, eps, sigma, T=1):
         self.steps = steps
         self.eps = eps
         self.sigma = sigma
         self.sigma_n = sigma.numpy()
+        #self.T = tf.constant([T], dtype='float32')
+        self.T = 1
+
+    def set_temp(self, T):
+        self.T = tf.constant([T], dtype='float32')
 
     def get_gradient(self, x, distribution):
         energy_fn = distribution.get_energy_fn()
         with tf.GradientTape() as g:
             g.watch(x)
-            y = energy_fn(x)
+            y = tf.scalar_mul(1/self.T, energy_fn(x))
         gradient = g.gradient(y, x)
         return gradient
 
