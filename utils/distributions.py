@@ -32,9 +32,10 @@ class Distribution(ABC):
 
 class Gaussian(object):
 
-    def __init__(self, mu, sigma):
+    def __init__(self, mu, sigma, constant=1):
         self.mu = mu
         self.sigma = sigma
+        self.constant = constant
 
         self.mu_n = self.mu.numpy()[0]
         self.sigma_n = self.sigma.numpy()
@@ -45,7 +46,7 @@ class Gaussian(object):
     def get_energy_fn(self):
 
         def energy_fn(x):
-            return support_functions.gaussian_energy(x, self.mu, self.i_sigma)
+            return support_functions.gaussian_energy(x, self.mu, self.i_sigma) - math.log(self.constant)
 
         return energy_fn
 
@@ -53,16 +54,24 @@ class Gaussian(object):
         exponent = -support_functions.gaussian_energy(x, self.mu, self.i_sigma)
         return tf.math.exp(exponent)
 
+    def get_density_fn(self, x):
+
+        def density_fn(x):
+            return self.get_density(x)
+
+        return density_fn
+
     def get_samples(self, n):
         return np.random.multivariate_normal(self.mu_n, self.sigma_n, n)
 
 
 class GMM(Distribution):
 
-    def __init__(self, mus, sigmas, pis):
+    def __init__(self, mus, sigmas, pis, constant=1):
         self.mus = mus
         self.sigmas = sigmas
         self.pis = pis
+        self.constant = constant
 
         self.nb_mixtures = len(mus)
         self.dim = len(self.mus[0])
@@ -91,7 +100,14 @@ class GMM(Distribution):
     def get_density(self, x):
         energy_fn = self.get_energy_fn()
         energy = energy_fn(x)
-        return tf.math.exp(-energy)
+        return tf.math.exp(-energy)*self.constant
+
+    def get_density_fn(self):
+
+        def density_fn(x):
+            return self.get_density(x)
+
+        return density_fn
 
     def get_samples(self, n):
         categorical = np.random.choice(self.nb_mixtures, size=(n,), p=self.pis)

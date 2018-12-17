@@ -20,6 +20,8 @@ class System(object):
         self.distribution = distribution
         self.initializer = initializer
         self.profiler = profiler
+        self.residual = None
+        self.res_c = None
 
     @property
     def dim(self):
@@ -38,7 +40,7 @@ class System(object):
         assert self.walker.x is not None, "Walker position must be initialized."
 
         curr_x = self.walker.x
-        prop_x = self.kernel.propose(curr_x, self.distribution)
+        prop_x = self.kernel.propose(curr_x, self.distribution, self.residual)
 
         curr_x_dens = self.distribution.get_density(curr_x)
         prop_x_dens = self.distribution.get_density(prop_x)
@@ -50,8 +52,8 @@ class System(object):
         accept_ratio = tf.minimum(1, tf.multiply(trans_factor,
                                                  ensemble_factor)).numpy()[0]
 
-        self.walker.walk(accept_ratio, prop_x)
-        self.profiler.log(self.walker.x)
+        accept = self.walker.walk(accept_ratio, prop_x)
+        self.profiler.log(self.walker.x, accept)
 
     def evolve(self, n):
         for i in range(n):

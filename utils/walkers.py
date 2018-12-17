@@ -18,5 +18,7 @@ class SingleWalker(Walker):
         random_draw = random()
         if accept_ratio > random_draw:
             self.x = x
+            return 1
         else:
             self.x = self.x
+            return 0
